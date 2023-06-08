@@ -1,0 +1,3 @@
+{'student_id': '001', 'name': 'xiaohogn', 'age': '18'}
+{'student_id': '002', 'name': 'xiaofang', 'age': '18'}
+{'student_id': '001', 'name': 'ss', 'age': ''}
