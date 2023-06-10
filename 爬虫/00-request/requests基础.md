@@ -81,9 +81,11 @@
   - 持久化存储
 
 - 案例应用
+
   - 搜狗首页数据采集
+
     - https://www.sogou.com/
-    
+
     - ```python
       import requests
       
@@ -104,17 +106,17 @@
           fp.write(page_text)
       print('数据爬取存储成功！')
       ```
-    
+
   - 简易的网页采集器
-    
+
     - 注意：在浏览器的地址栏中网址，网址？后面的内容就是请求的参数（请求参数）
-      
+
       - https://www.sogou.com/web?query=jay
       - query=jay就是请求的参数
         - 请求参数就是客户端发送给服务端的数据
-      
+
     - https://www.sogou.com/
-    
+
     - ```python
       import requests
       
@@ -141,9 +143,9 @@
       
       #出问题：没有爬取到我们想要的数据？原因是因为遇到反爬机制
       ```
-    
+
     - 分析该网站的反爬机制：
-    
+
       - 从爬取到的内容中提取到了一个关键信息：网站检测到了异常的访问请求
         - 异常的访问请求：通过程序发起的请求
         - 正常访问请求：通过浏览器发起的请求
@@ -152,7 +154,7 @@
         - user-agent：请求载体的身份标识
       - 破解方式（UA伪装）：伪装请求载体的身份标识
         - 该反爬机制是一种最常见最通用的，也就是说绝大数网站都会携带该反爬机制，因此日后写爬虫程序，默认带上UA伪装操作。
-    
+
     - ```python
       import requests
       
@@ -179,30 +181,31 @@
       with open(fileName,'w') as fp:
           fp.write(page_text)
       ```
-    
+
   - 豆瓣电影
+
     - https://movie.douban.com/typerank?type_name=%E7%88%B1%E6%83%85&type=13&interval_id=100:90&action=
-    
+
       - 爬取电影的详情数据
-    
+
       - 对网站进行分析：
-    
+
         - 1.在抓包工具中先定位到和浏览器地址栏的网址一样的数据包
-    
+
         - 2.查看开发者工具中，定位到的数据包中的response这一项，该项中存放的就是对定位到数据包的url发起请求，请求到的数据。
-    
+
         - 3.在response选项卡中查看是否存在我们想要爬取的数据：
-    
+
           - 如何检测是否存在我们想要爬取的数据呢？
-    
+
             - 局部搜索：将你想要爬取的局部数据，在response进行搜索，查看是否可以搜索到。
-    
+
               - 搜索到了：
-    
+
                 - 可以直接对该数据包的url发起请求获取你想要的数据即可
-    
+
               - 搜索不到：
-    
+
                 - 说明你想要的数据是【动态加载数据】
                 - 什么是动态加载数据？
                   - 特指，不是通过浏览器地址栏的请求请求到的数据，就是动态加载数据。同理，动态加载数据一定是通过其他的请求请求到的。
@@ -213,7 +216,7 @@
                         - url：https://movie.douban.com/j/chart/top_list
                         - 请求方式：get
                         - 请求参数：type=13&interval_id=100%3A90&action=&start=0&limit=1
-    
+
               - ```python
                 import requests
                 head = { #存放需要伪装的头信息
@@ -238,14 +241,15 @@
                     fp.write(title+':'+score+'\n')
                     print(title,'爬虫保存成功！')
                 ```
-    
+
               
-    
+
   - 肯德基
+
     - http://www.kfc.com.cn/kfccda/index.aspx
-    
+
       - 将餐厅的位置信息进行数据爬取
-    
+
       - ```python
         import requests
         head = { #存放需要伪装的头信息
@@ -270,12 +274,138 @@
             addr = dic['addressDetail']
             print(name,addr)
         ```
-    
+
         
-    
+
   - 药监总局(作业)
+
     - http://scxk.nmpa.gov.cn:81/xk/
+
     - 要求：抓取每一家企业的企业详情数据
-    
-    - 下次课程学习：数据解析（正则，xpath，bs4）
+
+    - 思路：
+
+      - 1.在对一个陌生的网站进行数据爬取前，首先要确定我们想要爬取的数据是否为动态加载数据？
+
+        - 先进入到任意一家企业的详情页中，查看企业的详情数据是否为动态加载数据？
+
+          - 基于抓包工具进行局部搜索
+            - 搜索的到：不是动态加载
+            - 搜索不到：是动态加载
+              - 发现企业的详情数据是动态加载数据
+
+        - 如何捕获动态加载数据？
+
+          - 基于抓包工具进行全局搜索，定位到动态加载数据对应的数据包
+
+            - url：http://scxk.nmpa.gov.cn:81/xk/itownet/portalAction.do?method=getXkzsById
+
+            - 请求方式：POST
+
+            - 请求参数：id: d601af664b5940029601d6d0a05be321
+
+            - 成功获取了一家企业对应的企业详情数据
+
+            - ```python
+              import requests
+              #指定url
+              url = 'http://scxk.nmpa.gov.cn:81/xk/itownet/portalAction.do?method=getXkzsById'
+              #请求参数
+              data = {
+                  'id':'d601af664b5940029601d6d0a05be321'
+              }
+              #UA伪装
+              headers = {
+                  'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36X-Requested-With: XMLHttpRequest'
+              }
+              #发起的post请求
+              response = requests.post(url=url,data=data,headers=headers)
+              #获取响应数据
+              json_data = response.json() #如果确定响应数据为json格式字符串才可以调用json方法实现反序列化
+              #获取企业名称，法人代表，许可证编号
+              print(json_data['epsName'],json_data['legalPerson'],json_data['productSn'])
+              ```
+
+            - 再次对另一家企业的企业详情数据进行分析
+
+              - 定位到了动态加载数据对应的数据包
+                - 在该数据包中可以提取到url，请求方式和请求参数，对比发现，不同企业的详情数据的数据包请方式和url是一样的，只有请求参数id的值不一样。
+                - 结论：不同企业的企业详情数据对应的数据包只有id的参数不同剩下都一样。
+                - 结果：如果我们可以批量获取多家企业的id值，就可以批量获取多家企业的企业详情数据。
+
+            - 如何批量获取多家企业的id值？
+
+              - id通常表示一组数据的唯一标识。联想到企业的名称也会作为企业的唯一标识，那么会不会企业的id和企业的名称在页面中是绑定在一起的呢？
+
+                - 测试：在首页通过企业名称找到企业的id
+
+                  - 通过抓包工具的分析，首页中企业的名称等信息也是动态加载数据。
+
+                    - 捕获动态加载数据。定位到指定的数据包，从数据包的响应数据中发现了不同企业的id，就可以将不同企业的id取到。
+
+                    - ```python
+                      import requests
+                      #UA伪装
+                      headers = {
+                          'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36X-Requested-With: XMLHttpRequest'
+                      }
+                      main_url = 'http://scxk.nmpa.gov.cn:81/xk/itownet/portalAction.do?method=getXkzsList'
+                      m_data = {
+                          "on": "true",
+                          "page": "1",
+                          "pageSize": "15",
+                          "productName": "",
+                          "conditionType": "1",
+                          "applyname": "",
+                          "applysn": "",
+                      }
+                      m_response = requests.post(url=main_url,headers=headers,data=m_data)
+                      json_data = m_response.json()
+                      for dic in json_data['list']:
+                          _id = dic['ID']
+                          print(_id)
+                      ```
+
+              - 整体代码整合：
+
+                - ```python
+                  import requests
+                  #UA伪装
+                  headers = {
+                      'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36X-Requested-With: XMLHttpRequest'
+                  }
+                  main_url = 'http://scxk.nmpa.gov.cn:81/xk/itownet/portalAction.do?method=getXkzsList'
+                  m_data = {
+                      "on": "true",
+                      "page": "1",
+                      "pageSize": "15",
+                      "productName": "",
+                      "conditionType": "1",
+                      "applyname": "",
+                      "applysn": "",
+                  }
+                  m_response = requests.post(url=main_url,headers=headers,data=m_data)
+                  json_data = m_response.json()
+                  ids = [] #存储多家企业的id
+                  for dic in json_data['list']:
+                      _id = dic['ID']
+                      ids.append(_id)
+                  
+                  #循环对每一家企业的详情数据进行获取
+                  for _id in ids:
+                      #指定url
+                      url = 'http://scxk.nmpa.gov.cn:81/xk/itownet/portalAction.do?method=getXkzsById'
+                      #请求参数
+                      data = {
+                          'id':_id
+                      }
+                      #发起的post请求
+                      response = requests.post(url=url,data=data,headers=headers)
+                      #获取响应数据
+                      json_data = response.json() #如果确定响应数据为json格式字符串才可以调用json方法实现反序列化
+                      #获取企业名称，法人代表，许可证编号
+                      print(json_data['epsName'],json_data['legalPerson'],json_data['productSn'])
+                  ```
+
+                
 
