@@ -25,7 +25,7 @@ for a in a_list:
         response = requests.get(url=detail_url, headers=headers)
         response.encoding = 'utf-8'
         result = response.text
-        soup = BeautifulSoup(result, features="html")
+        soup = BeautifulSoup(result, features="html.parser")
         div_tag = soup.find('div', id='chaptercontent')
         if div_tag is None:
             continue
