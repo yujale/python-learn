@@ -37,13 +37,12 @@ result_list = result.split('|')
 print(result_list)
 # result_list == ['154,251','145,167']
 for qos in result_list:
-    print(qos)
     x = int(qos.split(',')[0])
     y = int(qos.split(',')[1])
     print(x)
     print(y)
     ActionChains(chrome).move_to_element_with_offset(code_tag, x, y).click().perform()
-    sleep(2)
+    sleep(1)
 
 confirm_btn = chrome.find_element(By.XPATH, '/html/body/div[4]/div[2]/div[6]/div/div/div[3]/a/div')
 confirm_btn.click()
