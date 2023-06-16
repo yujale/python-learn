@@ -6,7 +6,7 @@
 import scrapy
 
 
-class Scrapt00SpiderBloodItem(scrapy.Item):
+class Scrapy01SpiderBloodItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
