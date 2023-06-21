@@ -3,30 +3,27 @@ from lxml import etree
 import re
 import sys
 
-# with open("../你的.txt", "r") as prf:
-#     page_id = ("".join(prf.readlines(1))).strip("\n")
-#     token = ("".join(prf.readlines(2))).strip("\n")
 
 print("请输入豆瓣电影id：")
 
-page_id = "e554ed28d52c4bcebbcf4ec83858b133"
-token = "secret_1GlDtx67fl9VoscfJpPdv12k4ygSAfmzNZymOjzGxIG"
+page_id = ""
+token = ""
 
-movid = str(input())
-doubanurl = "https://movie.douban.com/subject/" + movid
+movie_id = str(input())
+douban_url = "https://movie.douban.com/subject/" + movie_id
 
 # 请求头------------------------------------------------------------------------------------------------------------
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
                   'Safari/537.36'}
 
-data = requests.get(doubanurl, headers=headers)
+data = requests.get(douban_url, headers=headers)
 html = etree.HTML(data.text)
 
 # 开始爬取网页上的数据-------------------------------------------------------------------------------------------------
 
 # 中文片名
-name = "".join(html.xpath("//head/title/text()"))
+name = "".join(html.xpath("/html/head/title/text()"))
 if name == ("" or "页面不存在"):  # 如果没有查到，则结束程序
     print("未查到电影信息")
     sys.exit()
@@ -67,9 +64,9 @@ language += [" ", " ", " ", " "]  # 增加列表长度
 # 时长
 duration = ",".join(html.xpath("//span[@property='v:runtime']/text()"))
 
-# imdb号
-imdb = "".join(html.xpath("//span[./text()='IMDb:']/following::text()[1]"))
-imdb = imdb.strip()
+# # imdb号
+# imdb = "".join(html.xpath("//span[./text()='IMDb:']/following::text()[1]"))
+# imdb = imdb.strip()
 
 # 年份
 year = "".join(html.xpath("//span[@class='year']/text()"))
@@ -80,43 +77,43 @@ year = int(year)  # 数据类型转换成整数
 rate = "".join(html.xpath("//*[@id='interest_sectl']/div[1]/div[2]/strong/text()"))
 rate = rate.strip()
 if rate == "":  # 判断有没有评分，如果以下几项数据全部为空
-    raters = None
+    # raters = None
     rate = None
-    r5, r4, r3, r2, r1 = [None, None, None, None, None]
+    # r5, r4, r3, r2, r1 = [None, None, None, None, None]
 
 else:
     # 评分人数
-    raters = "".join(html.xpath("//*[@class='rating_people']/span/text()"))
+    # raters = "".join(html.xpath("//*[@class='rating_people']/span/text()"))
 
-    # 5-1星评分者比例
-    rlist = \
-        html.xpath("//*[@class='ratings-on-weight']/div[1]/span[2]/text()") + \
-        html.xpath("//*[@class='ratings-on-weight']/div[2]/span[2]/text()") + \
-        html.xpath("//*[@class='ratings-on-weight']/div[3]/span[2]/text()") + \
-        html.xpath("//*[@class='ratings-on-weight']/div[4]/span[2]/text()") + \
-        html.xpath("//*[@class='ratings-on-weight']/div[5]/span[2]/text()")
-
-    rlist = [i.replace("%", "") for i in rlist]  # 去除百分号
+    # # 5-1星评分者比例
+    # rlist = \
+    #     html.xpath("//*[@class='ratings-on-weight']/div[1]/span[2]/text()") + \
+    #     html.xpath("//*[@class='ratings-on-weight']/div[2]/span[2]/text()") + \
+    #     html.xpath("//*[@class='ratings-on-weight']/div[3]/span[2]/text()") + \
+    #     html.xpath("//*[@class='ratings-on-weight']/div[4]/span[2]/text()") + \
+    #     html.xpath("//*[@class='ratings-on-weight']/div[5]/span[2]/text()")
+    #
+    # rlist = [i.replace("%", "") for i in rlist]  # 去除百分号
 
     # 将评分比例数据分配到5个变量，便于整理
-    r5, r4, r3, r2, r1 = rlist[0], rlist[1], rlist[2], rlist[3], rlist[4]
+    # r5, r4, r3, r2, r1 = rlist[0], rlist[1], rlist[2], rlist[3], rlist[4]
 
     # 修改数据类型
     rate = float(rate)
-    raters = int(raters)
-    r5 = float(r5) / 100
-    r4 = float(r4) / 100
-    r3 = float(r3) / 100
-    r2 = float(r2) / 100
-    r1 = float(r1) / 100
+    # raters = int(raters)
+    # r5 = float(r5) / 100
+    # r4 = float(r4) / 100
+    # r3 = float(r3) / 100
+    # r2 = float(r2) / 100
+    # r1 = float(r1) / 100
 
-# 所在的榜单和排名
-rank_li = "".join(html.xpath("//*[@class='top250-link']/a/text()"))
-if rank_li != "":  # 如果有榜单，则获取它在榜单的名次
-    rank_no = int(("".join(html.xpath("//*[@class='top250-no']/text()"))).replace("No.", ""))
-else:  # 如果没有榜单，则空置
-    rank_li = " "
-    rank_no = None
+# # 所在的榜单和排名
+# rank_li = "".join(html.xpath("//*[@class='top250-link']/a/text()"))
+# if rank_li != "":  # 如果有榜单，则获取它在榜单的名次
+#     rank_no = int(("".join(html.xpath("//*[@class='top250-no']/text()"))).replace("No.", ""))
+# else:  # 如果没有榜单，则空置
+#     rank_li = " "
+#     rank_no = None
 
 print("已完成数据爬取：" + name + str(year))
 
@@ -132,9 +129,9 @@ p = {"parent": {
         "片名": {"title": [{"type": "text", "text": {"content": name}}]},
         "原名": {"rich_text": [{"type": "text", "text": {"content": native}}]},
         "评分": {"number": rate},
-        "评分人数": {"number": raters},
+        # "评分人数": {"number": raters},
         "上映年份": {"number": year},
-        "IMDb": {"rich_text": [{"type": "text", "text": {"content": imdb}}]},
+        # "IMDb": {"rich_text": [{"type": "text", "text": {"content": imdb}}]},
         "导演": {"rich_text": [{"type": "text", "text": {"content": director}}]},
         "主演": {"rich_text": [{"type": "text", "text": {"content": actor}}]},
         "类型": {"multi_select": [{"name": genre[0]}, {"name": genre[1]}, {"name": genre[2]}, {"name": genre[3]}]},
@@ -143,16 +140,16 @@ p = {"parent": {
             "multi_select": [{"name": region[0]}, {"name": region[1]}, {"name": region[2]}, {"name": region[3]},
                              {"name": region[4]}, {"name": region[5]}, {"name": region[6]}, {"name": region[7]}]},
         "语言": {"multi_select": [{"name": language[0]}, {"name": language[1]}, {"name": language[2]}, {"name": language[3]}]},
-        "榜单": {"select": {"name": rank_li}},
-        "排名": {"number": rank_no},
+        # "榜单": {"select": {"name": rank_li}},
+        # "排名": {"number": rank_no},
         "编剧": {"rich_text": [{"type": "text", "text": {"content": writer}}]},
-        "5星": {"number": r5},
-        "4星": {"number": r4},
-        "3星": {"number": r3},
-        "2星": {"number": r2},
-        "1星": {"number": r1},
+        # "5星": {"number": r5},
+        # "4星": {"number": r4},
+        # "3星": {"number": r3},
+        # "2星": {"number": r2},
+        # "1星": {"number": r1},
         "封面": {"files": [{"name": "封面", "type": "external", "external": {"url": post}}]},
-        "豆瓣": {"url": doubanurl}
+        "豆瓣": {"url": douban_url}
     }
 }
 headers = {
