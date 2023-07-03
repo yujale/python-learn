@@ -17,12 +17,11 @@ def url_data(url):
     html = requests.get(url, headers=headers).text
     res = etree.HTML(html)
     # trs = res.xpath('//*[@id="content"]/div/div[1]/div/table/tr')
-    trs = res.xpath('//*[@id="content"]/div/div[1]/div/table[2]')
+    trs = res.xpath('//*[@id="content"]/div/div[1]/div/table/tr')
     for tr in trs:
-        name = tr.xpath('./tbody/tr/td[2]/div[1]/a/text()')
-        comment = tr.xpath('./tbody/tr/td[2]/p[2]/span/text()')[0].replace('(', '').replace(')', '').strip()
-        info = tr.xpath('./tbody/tr/td[2]/p[1]/text()')
-        book_image = tr.xpath('./tbody/tr/td[1]/a/img/@src')
-        print("《{}》--{}--{}--{}".format(name, comment, info,book_image))
+        name = tr.xpath('./td[2]/div[1]/a/text()')[0].strip()
+        info = tr.xpath('./td[2]/p[1]/text()')[0].strip()
+        book_image = tr.xpath('./td[1]/a/img/@src')[0].strip()
+        print("《{}》--{}--{}".format(name, info,book_image))
 
 get_url()
